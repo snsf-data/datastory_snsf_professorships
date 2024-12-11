@@ -3,8 +3,8 @@
 *Between 2000 and 2018, 730 highly qualified researchers received an SNSF professorship. Our analysis shows that the funding scheme successfully promoted their careers on the way to permanent professorships or equivalent positions.*
 
 [English](https://data.snf.ch/stories/snsf-professorships-en.html)\
-[German](https://data.snf.ch/stories/snsf-professorships-de.html)\
-[French](https://data.snf.ch/stories/snsf-professorships-fr.html)
+[German](https://data.snf.ch/stories/snf-foerderungsprofessuren-de.html)\
+[French](https://data.snf.ch/stories/professeurs-boursiers-fns-fr.html)
 
 **Author(s)**: Inés de la Cuadra, Myriam Passannante, Julia Casutt-Schneeberger, Karin Bütler
 
