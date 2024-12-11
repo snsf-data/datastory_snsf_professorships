@@ -80,4 +80,4 @@ Contains the number of grants (accepted applications) per research research doma
 
 -   `Appointments (2000-2023), female`: the number of female grantees that were appointed during the period 2000-2023
 
--   `ppointments (2000-2023), male`: the number of male grantees that were appointed during the period 2000-2023
+-   `Appointments (2000-2023), male`: the number of male grantees that were appointed during the period 2000-2023
