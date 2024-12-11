@@ -1,0 +1,261 @@
+---
+title: "`r params$title`"
+format:
+  html:
+    toc: false
+    css: ["style.css"]
+    mainfont: Theinhardt
+    fontsize: "16px"
+    embed-resources: true
+    page-layout: custom
+    link-external-newwindow: true
+    footnotes-hover: true
+    fig-align: center
+    fig-format: retina
+    fig-dpi: 300
+language:
+  section-title-footnotes: "Notes de bas de page"
+params:
+  title: "Professeur·es boursiers FNS : une contribution majeure à la relève académique"
+  lead: "Entre 2000 et 2018, 730 chercheuses et chercheurs hautement qualifiés ont obtenu un subside de professeur·e boursier FNS. Notre analyse révèle que cet instrument d’encouragement leur a permis de progresser dans la carrière, ouvrant la voie à un poste de professeur·e permanent·e ou un poste équivalent."
+  publication_date: "2024-12-12 04:00:00"
+  lang: fr
+  use_theinhardt: false
+  reg_font_path: ""
+  bold_font_path: ""
+  it_font_path: ""
+  boldit_font_path: ""
+  doi_url: "https://doi.org/10.46446/datastory.snsf-professorships"
+  github_url: "https://github.com/snsf-data/datastory_snsf_professorships"
+execute:
+  echo: false
+  warning: false
+  message: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r general-setup}
+#| include: false
+
+# Install snf.datastory package if not available, otherwise load it
+if (!require("snf.datastory")) {
+  if (!require("devtools")) {
+    install.packages("devtools")
+    library(devtools)
+  }
+  install_github("snsf-data/snf.datastory")
+  library(snf.datastory)
+}
+
+# Load packages
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(conflicted)
+library(here)
+library(showtext)
+library(systemfonts)
+library(readxl)
+library(janitor)
+
+# Conflict preferences
+conflict_prefer("filter", "dplyr")
+conflict_prefer("get_datastory_theme", "snf.datastory")
+conflict_prefer("get_datastory_scheme", "snf.datastory")
+
+source("R/read_data.R")
+source("R/make_figures.R")
+source("R/translations.R")
+
+# Need if we want to use the registered font in ggiraph plots
+showtext_auto()
+
+# Increase showtext package font resolution
+showtext_opts(dpi = 300 * 2)
+
+# Set the locale for date formatting (Windows)
+Sys.setlocale(
+  "LC_TIME",
+  switch(
+    params$lang,
+    en = "English",
+    de = "German",
+    fr = "French"
+  )
+)
+
+# Create function to print number with local language-specific format
+print_num <- function(x) snf.datastory::print_num(x, lang = params$lang)
+
+# Knitr hook for local formatting of printed numbers
+knitr::knit_hooks$set(
+  inline = function(x) {
+    if (!is.numeric(x)) {
+      x
+    } else {
+      print_num(x)
+    }
+  }
+)
+
+```
+
+```{r print-header-infos}
+#| results: asis
+
+# Add publication date to header
+cat(format(as.Date(params$publication_date), "%d.%m.%Y"))
+```
+
+**`r params$lead`**
+
+L’instrument d’encouragement « Professeur·es boursiers FNS » a été introduit en 1999. Son objectif : permettre à des chercheuses et chercheurs de la relève hautement qualifiés et issus de toutes les disciplines de franchir un cap significatif dans leur carrière académique. Les subsides de professeur·es boursiers FNS permettaient aux bénéficiaires de diriger leur propre équipe de recherche en Suisse tout en leur donnant le statut et le titre de professeur·es assistant·es pour la durée de l’encouragement.
+
+### Vue d’ensemble de l’instrument d’encouragement
+
+L’évaluation s’est déroulée en deux étapes. Au cours de la première étape, les requêtes ont été évaluées par des panels sur la base des documents soumis par les requérant·es. Au cours de la deuxième étape, les requêtes retenues ont été examinées par des expert·es externes, le Conseil de la recherche a ensuite établi une présélection. Les candidat·es ont en outre eu l’occasion de présenter leurs projets lors d’un entretien.
+
+Le subside couvrait le salaire du ou de la bénéficiaire, qui correspondait à celui d’un·e professeur·e assistant·e local·e, ainsi que les fonds du projet et les salaires du personnel du projet (doctorant·es, postdocs et autres employé·es). Le financement se montait à 1 600 000 francs au maximum pour quatre ans. De 2000 à 2018, le FNS a attribué 730 subsides de professeur·es boursiers FNS sur 4484 requêtes évaluées dans le cadre de 19 mises au concours.
+
+En outre, les bénéficiaires avaient la possibilité de demander la prolongation de leur subside de professeur·e boursier FNS pour deux ans au maximum, le but étant d’optimiser les chances d’atteindre l’objectif de carrière en six ans et de consolider les activités de recherche financées par le FNS. De 2003 à 2023, 468 prolongations de subside ont été accordées, comprenant le salaire du ou de la bénéficiaire, ainsi que les fonds du projet et les salaires du personnel de projet. Au total, 1,25 milliard de francs ont été alloués au titre de cet instrument.
+
+### Requêtes et subsides
+
+Les chiffres clés des subsides accordés de la première mise au concours en 1999 (subsides de 2000) à la dernière en 2017 (subsides de 2018) sont présentés selon les trois domaines de recherche : sciences humaines et sociales (SHS) ; science, technologie, ingénierie et mathématiques (MINT) et sciences de la vie (SV).
+
+::: plot-box
+<div class="plot-title">Part des requêtes et subsides par domaine de recherche</div>
+```{r plot-desktop-1}
+#| out-width: "100%"
+#| fig-height: 2.75
+
+make_figure_1()
+
+```
+:::
+
+Les subsides accordés sont répartis à parts presque égales entre chacun des trois domaines de recherche, ce qui correspond étroitement à la demande, c.-à-d le nombre de requêtes déposées.
+
+::: plot-box
+<div class="plot-title">Part des requêtes par sexe et par domaine</div>
+```{r plot-desktop-2}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_2()
+
+```
+:::
+
+De 1999 à 2017, la proportion générale de requérantes était d’environ 29 %. C’est dans les sciences humaines et sociales que la part des requêtes soumises par des femmes était la plus forte (43 %), devant les sciences de la vie (29 %) et les disciplines MINT, qui ferment la marche (16 %).
+
+::: plot-box
+<div class="plot-title">Part des subsides par sexe et par domaine</div>
+```{r plot-desktop-3}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_3()
+
+```
+:::
+
+S’agissant des bénéficiaires de subsides de professeur·es boursiers FNS, la proportion de femmes est de 31 % au total (SHS : 41 % ; MINT : 22 % ; SV : 30 %), soit des valeurs légèrement supérieures à la proportion de demandes déposées par des requérantes. Les instruments d’encouragement visaient un taux de chercheuses de 30 % au minimum.
+
+::: plot-box
+<div class="plot-title">Nombre de subsides par institution</div>
+```{r plot-desktop-4}
+#| out-width: "100%"
+#| fig-height: 9
+
+make_figure_4()
+
+```
+:::
+
+L’Université de Zurich est l’institution ayant accueilli le plus de bénéficiaires de subsides de professeur·e boursier (138), suivie par les Universités de Genève (99), de Bâle (95) et de Berne (95). Au total, 5 bénéficiaires de subsides ont été accueillis par des hautes écoles spécialisées (BFH, FHNW et ZHdK).
+
+### De nombreux professeur·es permanent·es et autres responsables de recherche
+
+D’une durée de quatre à six ans, la période de financement permet aux bénéficiaires d’étoffer leur profil scientifique afin de se porter candidat·es, par la suite, à des postes permanents de professeur·es. Depuis l’année 2000 et l’octroi des premiers subsides, 577 des 730 scientifiques encouragés ont trouvé un poste de responsable de recherche dans les milieux universitaires, la plupart en tant que professeur·es permanent·es.
+
+::: plot-box
+<div class="plot-title">Part des bénéficiaires nommés responsables de recherche, par domaine</div>
+```{r plot-desktop-5}
+#| out-width: "100%"
+#| fig-height: 3.25
+
+make_figure_5()
+
+```
+:::
+
+À fin novembre 2023, le taux de nomination à des postes de responsable de recherche se montait à 79 % (SHS : 77 % ; MINT : 82 % ; SV : 78 %). Avec de nombreux subsides encore en cours, ce chiffre est susceptible d’augmenter à l’avenir. La moitié des bénéficiaires ont été nommés à leur poste de responsable de recherche au cours des quatre premières années de leur soutien par le FNS, tandis que les autres l’ont été au cours de la prolongation de deux ans ou après la fin du subside.
+
+::: plot-box
+<div class="plot-title">Bénéficiaires nommés à des postes de responsables de recherche, par sexe et par domaine</div>
+```{r plot-desktop-6}
+#| out-width: "100%"
+#| fig-height: 6.5
+
+make_figure_6()
+
+```
+:::
+
+Dans les sciences humaines et sociales et les sciences de la vie, les taux de nomination de chercheuses à des postes de responsable de recherche sont inférieurs de 4 à 5 % à ceux des chercheurs. Dans le domaine MINT, en revanche, ce taux – extrêmement élevé – est supérieur à celui des chercheurs (93 % contre 79 %). Ce résultat est d’autant plus remarquable que, à 16 %, la proportion de requêtes soumises par des femmes dans les disciplines MINT était inférieure à celle dans les autres domaines. Quant à la proportion de subsides octroyés aux chercheuses dans ce domaine, elle se montait à 22 %.
+
+::: plot-box
+<div class="plot-title">Répartition des lieux de nomination par domaine</div>
+```{r plot-desktop-7}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_7()
+
+```
+:::
+
+67 % des bénéficiaires de subsides de professeur·es boursiers FNS occupant un poste de responsable de recherche ont trouvé un poste en Suisse, 47 % de ces chercheuses et chercheurs ayant été nommés par leur institution d’accueil. Le taux de nomination dans l’institution d’accueil est le plus élevé dans les sciences de la vie (64 %), devant le domaine MINT (40 %) et les sciences humaines et sociales (35 %). 
+
+33 % des personnes sont partis à l’étranger. Ces chiffres démontrent la compétitivité du système de recherche suisse. Les professeur·es boursiers FNS ont ainsi également consolidé les liens internationaux, qui constituent des atouts fondamentaux pour une collaboration scientifique efficace. C’est dans le domaine MINT que l’on trouve le plus grand nombre de bénéficiaires de subsides ayant trouvé un poste à l’étranger (45 %), devant les sciences humaines et sociales (36 %) et les sciences de la vie (17 %).
+
+### Soutien continu au niveau des professeur·es assistant·es
+
+Bien que les subsides de professeur·es boursiers FNS ne se soient pas inscrits dans une optique de titularisation dans l’institution d’accueil, ils ont eu, dans la plupart des cas, une incidence positive sur la carrière académique des bénéficiaires. Le taux élevé de bénéficiaires ayant trouvé un poste permanent de professeur·e ou un poste équivalent en Suisse ou à l’étranger témoigne du succès de cet instrument d’encouragement. Autrement dit : les Professeur·es boursiers FNS ont fortement contribué à la promotion des carrières académiques.
+
+En 2018, les Professeur·es boursiers FNS ont été remplacés par l’instrument d’encouragement Eccellenza. À l’instar des Professeur·es boursiers FNS, les subsides Eccellenza Professorial Fellowships soutiennent des chercheuses et chercheurs qui visent un poste permanent de professeur·e. Le FNS a pris en charge le financement de leur projet ainsi que leur salaire, qui correspondait à celui d’un·e professeur·e assistant·e, pendant une durée de cinq ans.
+
+En raison de l’exclusion de la Suisse du programme de recherche Horizon Europe en 2021, l’instrument Eccellenza a été intégré aux SNSF Starting Grants en 2022. Ces subsides ont été mis en place à titre transitoire pour remplacer les ERC Starting Grants et s’adressent aux scientifiques basés en Suisse. Le budget alloué aux Eccellenza Professorial Fellowships a également été transféré dans les SNSF Starting Grants. Grâce à ce programme, le FNS conserve dans son portefeuille un instrument d’encouragement de la carrière académique de chercheuses et chercheurs de la relève hautement qualifiés et issus de toutes les disciplines.
+
+::: info-box
+
+### Données analysées
+
+Les données sur lesquelles se fonde ce récit ont été agrégées à la fin de l’année 2023. Les derniers subsides Professeur·es boursiers FNS s’achèveront en 2025, ce qui signifie que pour un certain nombre de bénéficiaires, la période de financement court toujours. En conséquence, les taux de nomination devraient encore évoluer.
+
+Les données utilisées émanent des rapports scientifiques soumis par les bénéficiaires à la fin de leur subside, ainsi que des informations qu’ils et elles ont fournies directement au FNS pendant la durée du financement. En outre, comme le contact entre les chercheuses et chercheurs et le FNS se perd généralement à l’issue de la période de financement maximale de six ans, des recherches sur Internet ont été effectuées périodiquement pour identifier, en cas de données manquantes, les postes actuellement occupés par les bénéficiaires. Le présent récit ne prétend pas être exhaustif.
+
+Pour plus de détails, voir le [Rapport d’évaluation du programme Professeur·es boursiers FNS (2007)](https://www.snf.ch/media/en/1TDDhrpBU4g919uF/fp_evaluationsbericht.pdf) ainsi que les [Enquêtes sur les subsides de professeur·es boursiers du Fonds national suisse (rapport 2015 en anglais)](https://www.snf.ch/media/en/LSQ71aF2PhZjbB4F/news_280515_bericht_snf_foerderungsprofessuren.pdf). Des informations complémentaires sont également disponibles sur la [page web dédiée aux Professeur·es boursiers FNS](https://www.snf.ch/fr/qB3Cj7WzYGcqbgVi/encouragement/encouragement/anciens-instruments-encouragement/professeurs-boursiers-fns).
+
+:::
+
+Les données, le texte et le code de ce récit de données sont [disponibles sur Github](`r params$github_url`) et [archivés sur Zenodo](`r params$doi_url`). <br>DOI: `r str_remove(params$doi_url, "https://doi.org/")`
+
+```{r prevent-internal-snsf-packages, include=FALSE}
+#| include: false
+
+# Internal SNSF packages must not be used in data stories, as their
+# pre-processing functions are internal and the corporate design differs from
+# the data portal.
+
+internal_pkg <- c("snfverse", "snf.preprocessing", "snf.plot")
+
+if (any(internal_pkg %in% loadedNamespaces())) {
+  stop(glue(
+    "You must not use internal SNSF packages in data stories.",
+    " Please resort to snf.datastory."
+  ))
+}
+```

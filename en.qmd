@@ -1,0 +1,261 @@
+---
+title: "`r params$title`"
+format:
+  html:
+    toc: false
+    css: ["style.css"]
+    mainfont: Theinhardt
+    fontsize: "16px"
+    embed-resources: true
+    page-layout: custom
+    link-external-newwindow: true
+    footnotes-hover: true
+    fig-align: center
+    fig-format: retina
+    fig-dpi: 300
+language:
+  section-title-footnotes: "Footnotes"
+params:
+  title: "SNSF professorships: a strong contribution to the next generation of academics"
+  lead: "Between 2000 and 2018, 730 highly qualified researchers received an SNSF professorship. Our analysis shows that the funding scheme successfully promoted their careers on the way to permanent professorships or equivalent positions."
+  publication_date: "2024-12-12 04:00:00"
+  lang: en
+  use_theinhardt: false
+  reg_font_path: ""
+  bold_font_path: ""
+  it_font_path: ""
+  boldit_font_path: ""
+  doi_url: "https://doi.org/10.46446/datastory.snsf-professorships"
+  github_url: "https://github.com/snsf-data/datastory_snsf_professorships"
+execute:
+  echo: false
+  warning: false
+  message: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r general-setup}
+#| include: false
+
+# Install snf.datastory package if not available, otherwise load it
+if (!require("snf.datastory")) {
+  if (!require("devtools")) {
+    install.packages("devtools")
+    library(devtools)
+  }
+  install_github("snsf-data/snf.datastory")
+  library(snf.datastory)
+}
+
+# Load packages
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(conflicted)
+library(here)
+library(showtext)
+library(systemfonts)
+library(readxl)
+library(janitor)
+
+# Conflict preferences
+conflict_prefer("filter", "dplyr")
+conflict_prefer("get_datastory_theme", "snf.datastory")
+conflict_prefer("get_datastory_scheme", "snf.datastory")
+
+source("R/read_data.R")
+source("R/make_figures.R")
+source("R/translations.R")
+
+# Need if we want to use the registered font in ggiraph plots
+showtext_auto()
+
+# Increase showtext package font resolution
+showtext_opts(dpi = 300 * 2)
+
+# Set the locale for date formatting (Windows)
+Sys.setlocale(
+  "LC_TIME",
+  switch(
+    params$lang,
+    en = "English",
+    de = "German",
+    fr = "French"
+  )
+)
+
+# Create function to print number with local language-specific format
+print_num <- function(x) snf.datastory::print_num(x, lang = params$lang)
+
+# Knitr hook for local formatting of printed numbers
+knitr::knit_hooks$set(
+  inline = function(x) {
+    if (!is.numeric(x)) {
+      x
+    } else {
+      print_num(x)
+    }
+  }
+)
+
+```
+
+```{r print-header-infos}
+#| results: asis
+
+# Add publication date to header
+cat(format(as.Date(params$publication_date), "%d.%m.%Y"))
+```
+
+**`r params$lead`**
+
+The SNSF professorships were launched in 1999. The purpose of the funding scheme was to enable highly qualified early-career researchers across all disciplines to take an important step in their academic careers. SNSF professorships not only enabled grantees to lead their own research team in Switzerland, but also gave them the status and title of assistant professor for the duration of the grant.
+
+### Overview of the funding scheme
+
+The evaluation involved a two-stage procedure. In the first stage, the applications were evaluated by panels based on the submitted documents. In the second stage, the selected applications were reviewed externally and shortlisted by the Research Council. In addition, the candidates were given the opportunity to present their projects during an interview.
+
+The grant covered the grantee’s salary at the level of a local assistant professorship, project funds and project staff salaries (doctoral candidates, postdocs and other employees). A maximum total of 1,600,000 francs was awarded for four years. From 2000 until 2018, the SNSF allocated 730 SNSF professorship grants out of 4484 evaluated applications over the course of 19 calls.
+
+Moreover, it was possible for grantees to submit an SNSF professorship prolongation application to extend the grant for a maximum of two years. The aim was to optimise the chances of achieving the career goal within six years and to consolidate the research activities funded by the SNSF. From 2003 to 2023, 468 prolongation grants were awarded, including the grantee’s salary at the level of a local assistant professorship, project funds and project staff salaries. In total, 1.25 billion francs were allocated through this funding scheme.
+
+### Applications and grants
+
+Key data on the grants awarded from the first call for applications in 1999 (grants in 2000) to the last call for applications in 2017 (grants in 2018) is presented across the three research domains: Social Sciences and Humanities (SSH); Mathematics, Information science, Natural sciences and Technology (MINT) and Life Sciences (LS).
+
+::: plot-box
+<div class="plot-title">Share of applications and grants by domain</div>
+```{r plot-desktop-1}
+#| out-width: "100%"
+#| fig-height: 2.75
+
+make_figure_1()
+
+```
+:::
+
+One third of the grants were awarded in each of the three research domains, closely corresponding to the demand, i.e. the number of applications submitted.
+
+::: plot-box
+<div class="plot-title">Share of applications by gender and domain</div>
+```{r plot-desktop-2}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_2()
+
+```
+:::
+
+The proportion of female candidates from 1999-2017 was around 29% overall. The highest proportion was in SSH with 43%, the lowest in MINT (16%). The proportion in LS was roughly halfway between the two with 29%.
+
+::: plot-box
+<div class="plot-title">Share of grants by gender and domain</div>
+```{r plot-desktop-3}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_3()
+
+```
+:::
+
+Regarding allocated SNSF professorships, the proportion of female recipients was 31% in total (41% SSH, 22% MINT, 30% LS), slightly higher than the proportion of applications submitted by female candidates. The funding scheme assigned a minimum target rate of 30% for female researchers.
+
+::: plot-box
+<div class="plot-title">Number of grants by institution</div>
+```{r plot-desktop-4}
+#| out-width: "100%"
+#| fig-height: 9
+
+make_figure_4()
+
+```
+:::
+
+The highest number of grantees carried out their professorships at the University of Zurich (138), followed by the Universities of Geneva (99), Basel (95) and Bern (95). A total of 5 grantees were hosted by universities of applied sciences (BFH, FHNW and ZHdK).
+
+### Many permanent professorships and other research leaders
+
+The funding period of four to six years allows grantees to develop their profiles and then to apply for appropriate permanent positions. Since the start of the first grants in 2000, 577 of the 730 funded researchers have found positions as research leaders in academia, the majority of which are permanent professorships.
+
+::: plot-box
+<div class="plot-title">Share of grantees appointed to positions as research leaders by domain</div>
+```{r plot-desktop-5}
+#| out-width: "100%"
+#| fig-height: 3.25
+
+make_figure_5()
+
+```
+:::
+
+The overall appointment rate to positions as research leaders through November 2023 is 79% (SSH 77%, MINT 82%, LS 78%). Many SNSF professorships are still in progress, so this number will likely increase in the future. Half of the grant recipients were appointed to their positions as research leaders during the first four years of their professorships, while the rest were appointed in the two-year follow-up phase or after their funding had ended.
+
+::: plot-box
+<div class="plot-title">Grantees appointed to positions as research leaders by gender and domain</div>
+```{r plot-desktop-6}
+#| out-width: "100%"
+#| fig-height: 6.5
+
+make_figure_6()
+
+```
+:::
+
+In SSH and LS, the rates that female grantees were appointed to positions as research leaders are lower than those of male grantees (difference of 4%-5% in each domain). In MINT, however, the rate of successful female grantees is extremely high (93% appointments) compared to male grantees (79% appointments). This is remarkable in that the proportion of applications submitted by women in the MINT disciplines was the lowest relative to the other domains (16% of all applications were submitted by female researchers in MINT; 22% of all grants were awarded to female researchers in MINT).
+
+::: plot-box
+<div class="plot-title">Distribution of appointment locations by domain</div>
+```{r plot-desktop-7}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_7()
+
+```
+:::
+
+67% of the SNSF professorship grantees with positions as research leaders found positions in Switzerland, with 47% having been appointed by the institution where they did their SNSF professorship. At 64%, the percentage of appointments at the host institution is the highest in LS, followed by 40% in MINT and 35% in SSH. 
+
+33% of the persons went abroad. This highlights the competitiveness of the Swiss research system. The SNSF professorships have thus also reinforced international connections that are fundamental for productive scientific collaboration. The highest share of grantees finding appointments outside Switzerland is in MINT (45%), followed by SSH (36%) and LS (17%).
+
+### Continued support at the assistant professor level
+
+Although the SNSF professorships were not linked to a tenure-track position at the host institution, in most cases they had a positive impact on the academic careers of the grantees. A high percentage of recipients found a permanent professorship or an equivalent position in Switzerland or abroad, which speaks to the success of this funding scheme. In other words, the SNSF professorships can be considered to have made a strong contribution to the promotion of academic careers.
+
+In 2018, the SNSF professorships were succeeded by the new funding scheme Eccellenza. Like the former SNSF professorships, the Eccellenza Professorial Fellowships supported researchers who were aiming for a permanent professorship. The SNSF covered their project expenses as well as their salaries at the level of an assistant professorship for five years.
+
+Following Switzerland’s non-association to Horizon Europe in 2021, Eccellenza was integrated into the SNSF Starting Grants in 2022. These grants were established as a transitional measure to temporarily replace the ERC Starting Grants for researchers based in Switzerland. The budget for the Eccellenza Professorial Fellowships was also transferred to the transitional measure. Through the SNSF Starting Grants, the SNSF continues to promote the academic careers of highly qualified early-career researchers across all disciplines.
+
+::: info-box
+
+### What data did we use?
+
+The data used in this story were aggregated at the end of 2023. The last SNSF professorship grants will expire in 2025, meaning that not all recipients have yet reached the end of the funding period. The eventual rate of appointments will still change.
+
+The data were collected from the scientific reports submitted by the grantees at the end of their SNSF professorships as well as directly from the information that they provided to the SNSF during their grants. In addition, since researchers are generally no longer in contact with the SNSF after the maximum funding period of six years, internet searches were carried out periodically to identify the current positions of grantees in cases where data was missing. There is no claim to completeness.
+
+For more details, see the [Evaluation report on SNSF professorships 2007](https://www.snf.ch/media/en/1TDDhrpBU4g919uF/fp_evaluationsbericht.pdf) and the [Surveys on the professorships of the Swiss National Science Foundation – Report 2015](https://www.snf.ch/media/en/LSQ71aF2PhZjbB4F/news_280515_bericht_snf_foerderungsprofessuren.pdf). Additional information can be found on the [SNSF professorships web page](https://www.snf.ch/en/qB3Cj7WzYGcqbgVi/funding/funding/discontinued-funding-schemes/snsf-professorships).
+
+:::
+
+Data, text and code of this data story are [available on Github](`r params$github_url`) and [archived on Zenodo](`r params$doi_url`).<br>DOI: `r str_remove(params$doi_url, "https://doi.org/")`
+
+```{r prevent-internal-snsf-packages, include=FALSE}
+#| include: false
+
+# Internal SNSF packages must not be used in data stories, as their
+# pre-processing functions are internal and the corporate design differs from
+# the data portal.
+
+internal_pkg <- c("snfverse", "snf.preprocessing", "snf.plot")
+
+if (any(internal_pkg %in% loadedNamespaces())) {
+  stop(glue(
+    "You must not use internal SNSF packages in data stories.",
+    " Please resort to snf.datastory."
+  ))
+}
+```

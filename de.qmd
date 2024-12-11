@@ -1,0 +1,263 @@
+---
+title: "`r params$title`"
+format:
+  html:
+    toc: false
+    css: ["style.css"]
+    mainfont: Theinhardt
+    fontsize: "16px"
+    embed-resources: true
+    page-layout: custom
+    link-external-newwindow: true
+    footnotes-hover: true
+    fig-align: center
+    fig-format: retina
+    fig-dpi: 300
+language:
+  section-title-footnotes: "Fussnoten"
+params:
+  title: "Die SNF-Förderungsprofessuren haben den akademischen Nachwuchs wesentlich gestärkt"
+  lead: "Von 2000 bis 2018 bekamen 730 hochqualifizierte Forschende eine SNF-Förderungsprofessur. Die Analyse zeigt: Das Förderinstrument unterstützte sie erfolgreich auf dem Weg zu einer ständigen Professur oder gleichwertigen Position."
+  publication_date: "2024-12-12 04:00:00"
+  lang: de
+  use_theinhardt: false
+  reg_font_path: ""
+  bold_font_path: ""
+  it_font_path: ""
+  boldit_font_path: ""
+  doi_url: "https://doi.org/10.46446/datastory.snsf-professorships"
+  github_url: "https://github.com/snsf-data/datastory_snsf_professorships"
+execute:
+  echo: false
+  warning: false
+  message: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r general-setup}
+#| include: false
+
+# Install snf.datastory package if not available, otherwise load it
+if (!require("snf.datastory")) {
+  if (!require("devtools")) {
+    install.packages("devtools")
+    library(devtools)
+  }
+  install_github("snsf-data/snf.datastory")
+  library(snf.datastory)
+}
+
+# Load packages
+library(tidyverse)
+library(lubridate)
+library(scales)
+library(conflicted)
+library(here)
+library(showtext)
+library(systemfonts)
+library(readxl)
+library(janitor)
+
+# Conflict preferences
+conflict_prefer("filter", "dplyr")
+conflict_prefer("get_datastory_theme", "snf.datastory")
+conflict_prefer("get_datastory_scheme", "snf.datastory")
+
+source("R/read_data.R")
+source("R/make_figures.R")
+source("R/translations.R")
+
+# Need if we want to use the registered font in ggiraph plots
+showtext_auto()
+
+# Increase showtext package font resolution
+showtext_opts(dpi = 300 * 2)
+
+# Set the locale for date formatting (Windows)
+Sys.setlocale(
+  "LC_TIME",
+  switch(
+    params$lang,
+    en = "English",
+    de = "German",
+    fr = "French"
+  )
+)
+
+# Create function to print number with local language-specific format
+print_num <- function(x) snf.datastory::print_num(x, lang = params$lang)
+
+# Knitr hook for local formatting of printed numbers
+knitr::knit_hooks$set(
+  inline = function(x) {
+    if (!is.numeric(x)) {
+      x
+    } else {
+      print_num(x)
+    }
+  }
+)
+
+```
+
+```{r print-header-infos}
+#| results: asis
+
+# Add publication date to header
+cat(format(as.Date(params$publication_date), "%d.%m.%Y"))
+```
+
+**`r params$lead`**
+
+Die SNF-Förderungsprofessuren wurden 1999 erstmals ausgeschrieben. Ziel war es, talentierten Nachwuchsforschenden aller Fachrichtungen einen wichtigen Schritt in ihrer wissenschaftlichen Karriere zu ermöglichen. Sie konnten damit ein eigenes Forschungsteam in der Schweiz leiten. Ausserdem erhielten sie für die Dauer des Förderbeitrags den Status und Titel einer Assistenzprofessorin oder eines Assistenzprofessors.
+
+### Eckdaten des Förderinstruments
+
+Der SNF evaluierte die Gesuche in einem mehrstufigen Verfahren. In einem ersten Schritt wurden sie von den zuständigen Gremien anhand der eingereichten Unterlagen bewertet. Die ausgewählten Gesuche wurden dann in einem zweiten Schritt extern begutachtet. Anschliessend erstellte der Forschungsrat eine Auswahlliste. Die Gesuchstellenden konnten ihre Projekte zudem in einem Gespräch präsentieren.
+
+Der Förderbeitrag deckte den Lohn der gesuchstellenden Person im Umfang einer lokalen Assistenzprofessur, die Projektmittel und die Löhne der Projektmitarbeitenden (Doktorierende, Postdoktorierende und andere Mitarbeitende). Der Höchstbeitrag für eine vierjährige Laufzeit betrug 1,6 Millionen Franken. Von 2000 bis 2018 begutachtete der SNF im Rahmen von 19 Ausschreibungen 4484 Gesuche und bewilligte 730 Förderungsprofessuren.
+
+Die Beitragsempfangenden konnten zudem ein Gesuch für eine Verlängerung der SNF-Förderungsprofessur um maximal zwei Jahre einreichen. Dies sollte ihre Chance erhöhen, das Karriereziel innerhalb von sechs Jahren zu erreichen und die vom SNF geförderte Forschung abzuschliessen. Von 2003 bis 2023 wurden 468 Beitragsverlängerungen bewilligt. Insgesamt vergab der SNF im Rahmen dieses Förderinstruments 1,25 Milliarden Franken.
+
+### Gesuche und Förderbeiträge
+
+Unsere Datengeschichte zeigt die wichtigsten Daten zu den bewilligten Förderbeiträgen, von der ersten Ausschreibung im Jahr 1999 (Vergabe 2000) bis zur letzten Ausschreibung im Jahr 2017 (Vergabe 2018). Sie werden auf die drei Forschungsgebiete aufgeteilt: Geistes- und Sozialwissenschaften (GSW); Mathematik, Informatik, Naturwissenschaften und Technik (MINT) und Lebenswissenschaften (LW).
+
+::: plot-box
+<div class="plot-title">Gesuche und Förderbeiträge nach Forschungsgebiet</div>
+```{r plot-desktop-1}
+#| out-width: "100%"
+#| fig-height: 2.75
+
+make_figure_1()
+
+```
+:::
+
+Die Förderbeiträge gingen zu je einem Drittel an die drei Forschungsgebiete. Dies entsprach auch der Nachfrage, d.h. der Zahl der eingereichten Gesuche pro Forschungsgebiet.
+
+::: plot-box
+<div class="plot-title">Gesuche nach Geschlecht und Forschungsgebiet</div>
+```{r plot-desktop-2}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_2()
+
+```
+:::
+
+Der Anteil der Gesuchstellerinnen lag im Zeitraum von 1999 bis 2017 bei insgesamt rund 29%. Am höchsten war der Anteil in den GSW mit 43%, am niedrigsten in MINT (16%). In den LW befand er sich mit 29% etwa in der Mitte.
+
+::: plot-box
+<div class="plot-title">Förderbeiträge nach Geschlecht und Forschungsgebiet</div>
+```{r plot-desktop-3}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_3()
+
+```
+:::
+
+Bei den bewilligten SNF-Förderungsprofessuren lag der Frauenanteil insgesamt bei 31% (GSW 41%, MINT 22%, LW 30%) und damit leicht über dem Anteil der von Frauen eingereichten Gesuche. Das Förderinstrument sah eine Mindestquote von 30% für Forscherinnen vor.
+
+::: plot-box
+<div class="plot-title">Anzahl Förderbeiträge nach Institution</div>
+```{r plot-desktop-4}
+#| out-width: "100%"
+#| fig-height: 9
+
+make_figure_4()
+
+```
+:::
+
+Am meisten Beitragsempfangende waren im Rahmen ihrer SNF-Förderungsprofessur an der Universität Zürich tätig (138), gefolgt von den Universitäten Genf (99), Basel (95) und Bern (95). Bei insgesamt 5 Förderbeiträgen war die Gastinstitution eine Fachhochschule (BFH, FHNW und ZHdK).
+
+### Viele ständige Professuren und weitere leitende Positionen
+
+Der Förderzeitraum von vier bis sechs Jahren ermöglichte es den Beitragsempfangenden, ihr Profil zu entwickeln und sich dann für eine unbefristete Stelle zu bewerben. Seit den ersten Förderbeiträgen im Jahr 2000 erhielten 577 der 730 Forschenden eine leitende Position an einer Hochschule. In den meisten Fällen handelte es sich um eine ständige Professur.
+
+::: plot-box
+<div class="plot-title">Ernennung in leitende Forschungsposition nach Forschungsgebiet</div>
+```{r plot-desktop-5}
+#| out-width: "100%"
+#| fig-height: 3.25
+
+make_figure_5()
+
+```
+:::
+
+Der Anteil der Ernennungen in leitende Forschungspositionen lag im November 2023 bei insgesamt 79% (GSW 77%, MINT 82%, LW 78%). Viele Professuren liefen zu diesem Zeitpunkt noch, weshalb der Prozentsatz weiter angestiegen sein dürfte. Die Hälfte der Beitragsempfangenden wurde in den ersten vier Jahren ihrer SNF-Professur in eine leitende Position berufen, die andere Hälfte während der zweijährigen Verlängerung oder danach.
+
+::: plot-box
+<div class="plot-title">Ernennung in leitende Forschungsposition nach Geschlecht und Forschungsgebiet</div>
+```{r plot-desktop-6}
+#| out-width: "100%"
+#| fig-height: 6.5
+
+make_figure_6()
+
+```
+:::
+
+In den GSW und den LW ist der Anteil der Frauen mit SNF-Förderungsprofessur, die in eine leitende Forschungsposition aufstiegen, tiefer als der Männeranteil (Unterschied von je 4 bis 5 Prozentpunkten). In MINT ist der Anteil der erfolgreichen Beitragsempfängerinnen hingegen mit 93% Ernennungen extrem hoch (79% bei den Männern). Dies ist auch bemerkenswert, weil der Prozentsatz der von Frauen eingereichten Gesuche in MINT am tiefsten war (16% der Gesuche, 22% der Förderbeiträge).
+
+::: plot-box
+<div class="plot-title">Ort der Ernennung nach Forschungsgebiet</div>
+```{r plot-desktop-7}
+#| out-width: "100%"
+#| fig-height: 3.5
+
+make_figure_7()
+
+```
+:::
+
+67% der Personen wurden in der Schweiz in eine leitende Forschungsposition berufen. 47% blieben an der Institution ihrer SNF-Förderungsprofessur. Mit 64% ist der Anteil der Ernennungen an der Gastinstitution in den LW am höchsten, gefolgt von 40% in MINT und 35% in den GSW. 
+
+33% der Personen erhielten eine leitende Forschungsposition im Ausland. Dies bestätigt die Wettbewerbsfähigkeit des Schweizer Forschungssystems. Durch die SNF-Professuren wurden somit auch die internationalen Kontakte gestärkt, die für eine produktive wissenschaftliche Zusammenarbeit zentral sind. Am höchsten war der Anteil von Ernennungen im Ausland in MINT (45%), gefolgt von den GSW (36%) und den LW (17%).
+
+### Weiterhin Unterstützung von Assistenzprofessuren
+
+Die SNF-Förderungsprofessuren waren selber nicht mit einer ständigen Stelle an der Gastinstitution verbunden. Dennoch wirkten sie sich in den meisten Fällen positiv auf die akademische Laufbahn der Beitragsempfangenden aus. Viele erhielten wie gezeigt nach Ablauf des Förderbeitrags eine ständige Professur oder eine gleichwertige Stelle in der Schweiz oder im Ausland. Dies spricht für den Erfolg dieses Förderinstruments. Mit anderen Worten: Die SNF-Förderungsprofessuren haben den akademischen Nachwuchs wesentlich gestärkt.
+
+2018 wurden die SNF-Förderungsprofessuren durch das neue Förderinstrument Eccellenza abgelöst. Auch mit den Eccellenza Professorial Fellowships unterstützte der SNF Forschende, die eine ständige Professur anstrebten. Er übernahm die Projektkosten sowie die Löhne auf dem Niveau einer Assistenzprofessur für fünf Jahre.
+
+Im Jahr 2021 wurde die Schweiz nicht an das europäische Forschungsprogramm Horizon Europe assoziiert. Deshalb integrierte der SNF im Jahr 2022 das Förderinstrument Eccellenza in die neuen SNSF Starting Grants. Er schuf diese Förderbeiträge als Übergangsmassnahme, um die europäischen ERC Starting Grants für Forschende in der Schweiz zu ersetzen. Auch das Eccellenza-Budget übertrug er auf die Übergangsmassnahme. Mit diesem Programm fördert der SNF weiterhin die akademische Laufbahn von hochqualifizierten Nachwuchsforschenden aller Disziplinen.
+
+::: info-box
+
+### Welche Daten wurden verwendet?
+
+Die in diesem Artikel verwendeten Daten haben wir Ende 2023 aggregiert. Die letzten SNF-Förderungsprofessuren laufen 2025 aus, womit noch nicht alle Förderbeiträge abgeschlossen sind. Die definitive Zahl der Ernennungen wird sich deshalb ändern.
+
+Die Daten stammen zum einen aus den wissenschaftlichen Berichten, welche die Beitragsempfangenden zum Abschluss ihrer SNF-Förderungsprofessur einreichen. Zum anderen direkt aus den Unterlagen, die sie dem SNF während der Förderdauer vorlegen. 
+
+Nach der maximalen Zeit von sechs Jahren stehen die Forschenden in der Regel nicht mehr mit dem SNF in Kontakt. Deshalb haben wir periodisch zusätzliche Internetrecherchen durchgeführt, um bei fehlenden Daten die gegenwärtigen beruflichen Positionen von ehemaligen Beitragsempfangenden in Erfahrung zu bringen. Es besteht kein Anspruch auf Vollständigkeit.
+
+Einzelheiten dazu siehe [Evaluationsbericht SNF-Förderungsprofessuren 2007 (französisch)](https://www.snf.ch/media/en/1TDDhrpBU4g919uF/fp_evaluationsbericht.pdf) und [Surveys on the professorships of the Swiss National Science Foundation – Report 2015](https://www.snf.ch/media/en/LSQ71aF2PhZjbB4F/news_280515_bericht_snf_foerderungsprofessuren.pdf) (Englisch). Weitere Informationen finden Sie auf der Webseite [der SNF-Förderungsprofessuren](https://www.snf.ch/de/qB3Cj7WzYGcqbgVi/foerderung/foerderung/ehemalige-foerderungsinstrumente/snf-foerderungsprofessuren).
+
+:::
+
+Daten, Text und Code dieser Datengeschichte sind [auf Github verfügbar](`r params$github_url`) und [auf Zenodo archiviert](`r params$doi_url`). <br>DOI: `r str_remove(params$doi_url,"https://doi.org/")`
+
+```{r prevent-internal-snsf-packages, include=FALSE}
+#| include: false
+
+# Internal SNSF packages must not be used in data stories, as their
+# pre-processing functions are internal and the corporate design differs from
+# the data portal.
+
+internal_pkg <- c("snfverse", "snf.preprocessing", "snf.plot")
+
+if (any(internal_pkg %in% loadedNamespaces())) {
+  stop(glue(
+    "You must not use internal SNSF packages in data stories.",
+    " Please resort to snf.datastory."
+  ))
+}
+```

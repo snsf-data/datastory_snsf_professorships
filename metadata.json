@@ -1,0 +1,25 @@
+[
+  {
+    "title_en": "SNSF professorships: a strong contribution to the next generation of academics",
+    "title_de": "Die SNF-Förderungsprofessuren haben den akademischen Nachwuchs wesentlich gestärkt",
+    "title_fr": "Professeur·es boursiers FNS : une contribution majeure à la relève académique",
+    "author_en": "Inés de la Cuadra, Independent Careers, SNSF;Myriam Passannante, Independent Careers, SNSF;Julia Casutt-Schneeberger, Data Team, SNSF;Karin Bütler, Data Team, SNSF",
+    "author_de": "Inés de la Cuadra, Unabhängige Karrieren, SNF;Myriam Passannante, Unabhängige Karrieren, SNF;Julia Casutt-Schneeberger, Datenteam, SNF;Karin Bütler, Datenteam, SNF",
+    "author_fr": "Inés de la Cuadra, Carrières indépendantes, FNS;Myriam Passannante, Carrières indépendantes, FNS;Julia Casutt-Schneeberger, Data Team, FNS;Karin Bütler, Data Team, FNS",
+    "datastory_category": "standard",
+    "publication_date_en": "2024-12-12 04:00:00",
+    "publication_date_de": "2024-12-12 04:00:00",
+    "publication_date_fr": "2024-12-12 04:00:00",
+    "languages": "en;de;fr",
+    "short_desc_en": "Between 2000 and 2018, 730 highly qualified researchers received an SNSF professorship. Our analysis shows that the funding scheme successfully promoted their careers on the way to permanent professorships or equivalent positions.",
+    "short_desc_de": "Von 2000 bis 2018 bekamen 730 hochqualifizierte Forschende eine SNF-Förderungsprofessur. Die Analyse zeigt: Das Förderinstrument unterstützte sie erfolgreich auf dem Weg zu einer ständigen Professur oder gleichwertigen Position.",
+    "short_desc_fr": "Entre 2000 et 2018, 730 chercheuses et chercheurs hautement qualifiés ont obtenu un subside de professeur·e boursier FNS. Notre analyse révèle que cet instrument d’encouragement leur a permis de progresser dans la carrière, ouvrant la voie à un poste de professeur·e permanent·e ou un poste équivalent.",
+    "tags": "T290T,T300T",
+    "top_story": "false",
+    "github_url": "https://github.com/snsf-data/datastory_snsf_professorships",
+    "doi": "https://doi.org/10.46446/datastory.snsf-professorships",
+    "name_en": "snsf-professorships",
+    "name_de": "snsf-professorships",
+    "name_fr": "snsf-professorships"
+  }
+]
