@@ -2,6 +2,7 @@ if (interactive()) {
   
   library(readr)
   library(here)
+  library(purrr)
   
 }
 

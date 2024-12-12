@@ -30,13 +30,17 @@ Contains the number of applications and accepted applications (grants) per domai
 
 ## `Applications_Grants_Dom_Gend.csv`
 
-Contains the number of applications per domain and gender.
+Contains the number of applications and accepted applications (grants) per domain and gender.
 
 -   `Domain`: the research domain
 
--   `Female`: the number of applications received from female applicants
+-   `Applications_Female`: the number of applications received from female applicants
 
--   `Male`: the number of applications received from male applicants
+-   `Applications_Male`: the number of applications received from male applicants
+
+-   `Grants_Female`: the number of applications granted to female applicants
+
+-   `Grants_Male`: the number of  applications granted to male applicants
 
 ## `Grants_Institution.csv`
 

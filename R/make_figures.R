@@ -98,6 +98,7 @@ make_figure_2 <- function() {
   
   plot <-
     Applications_Grants_Dom_Gend %>%
+    select(Domain, Applications_Female, Applications_Male) %>%
     pivot_longer(cols = -Domain, names_to = "Type", values_to = "Value") %>%
     mutate(
       Domain =
@@ -113,8 +114,8 @@ make_figure_2 <- function() {
       Type =
         fct(
           case_when(
-            Type == "Male" ~ male,
-            Type == "Female" ~ female
+            Type == "Applications_Male" ~ male,
+            Type == "Applications_Female" ~ female
           ),
           levels = c(female, male)
         )
@@ -161,6 +162,7 @@ make_figure_3 <- function() {
   
   plot <-
     Applications_Grants_Dom_Gend %>%
+    select(Domain, Grants_Female, Grants_Male) %>%
     pivot_longer(cols = -Domain, names_to = "Type", values_to = "Value") %>%
     mutate(
       Domain =
@@ -176,8 +178,8 @@ make_figure_3 <- function() {
       Type =
         fct(
           case_when(
-            Type == "Male" ~ male,
-            Type == "Female" ~ female
+            Type == "Grants_Male" ~ male,
+            Type == "Grants_Female" ~ female
           ),
           levels = c(female, male)
         )

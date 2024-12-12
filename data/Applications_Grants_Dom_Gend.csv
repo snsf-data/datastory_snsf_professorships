@@ -1,5 +1,5 @@
-Domain,Female,Male
-SSH,645,872
-MINT,243,1247
-LS,424,1053
-Total,1312,3172
+Domain,Applications_Female,Applications_Male,Grants_Female,Grants_Male
+SSH,645,872,97,138
+MINT,243,1247,54,195
+LS,424,1053,73,173
+Total,1312,3172,224,506
